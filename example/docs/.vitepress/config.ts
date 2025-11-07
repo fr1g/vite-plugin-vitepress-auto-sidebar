@@ -5,9 +5,9 @@ export default {
   title: "VitePress",
   description: "Vite & Vue powered static site generator.",
   vite: {
-    plugins: [AutoSidebar({ deletePrefix: '.', collapsed: false })],
+    plugins: [AutoSidebar({ deletePrefix: '.', collapsed: false, indexAliasFromFile: true })],
   },
   themeConfig: {
-     nav: [{ text: "home", link: "/" },{ text: "note", link: "/note/index" }],
+    nav: [{ text: "home", link: "/" }, { text: "note", link: "/note/index" }],
   },
 };

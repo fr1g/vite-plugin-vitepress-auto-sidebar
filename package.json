@@ -1,16 +1,16 @@
 {
-  "name": "vite-plugin-vitepress-auto-sidebar",
+  "name": "vas-dir-indexalias",
   "type": "module",
-  "version": "1.7.1",
-  "description": "",
-  "author": "QC2168",
+  "version": "1.7.2",
+  "description": "Forked from QC2168",
+  "author": "frigx",
   "license": "MIT",
-  "homepage": "https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar#readme",
+  "homepage": "https://github.com/fr1g/vite-plugin-vitepress-auto-sidebar#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar.git"
+    "url": "git+https://github.com/fr1g/vite-plugin-vitepress-auto-sidebar.git"
   },
-  "bugs": "https://github.com/QC2168/vite-plugin-vitepress-auto-sidebar/issues",
+  "bugs": "https://github.com/fr1g/vite-plugin-vitepress-auto-sidebar/issues",
   "keywords": [
     "vitepress",
     "vite",

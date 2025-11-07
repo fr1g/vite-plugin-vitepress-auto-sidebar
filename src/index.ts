@@ -4,7 +4,7 @@ import type { DefaultTheme } from 'vitepress/theme';
 import type { Plugin, ViteDevServer } from 'vite';
 import type { SidebarPluginOptionType, UserConfig } from './types';
 
-import { DEFAULT_IGNORE_FOLDER, log, removePrefix, extractTitleFn } from './utils';
+import { DEFAULT_IGNORE_FOLDER, log, removePrefix, extractTitleFn, getAttributeFromFileByYaml, getTitleFromFile } from './utils';
 
 let option: SidebarPluginOptionType;
 
@@ -23,6 +23,7 @@ function createSideBarItems(
     ignoreList = [],
     titleFromFile = false,
     titleFromFileByYaml = false,
+    indexAliasFromFile = true,
   } = option;
   const rawNode = readdirSync(join(targetPath, ...path));
   const node = beforeCreateSideBarItems?.(rawNode) ?? rawNode;
@@ -34,6 +35,7 @@ function createSideBarItems(
 
   const exec = extractTitleFn({ titleFromFile, titleFromFileByYaml });
   for (const fname of node) {
+    const fullPath = join(targetPath, ...path, fname); // 
     if (recursive && statSync(join(targetPath, ...path, fname)).isDirectory()) {
       if (ignoreList.some(item => item === fname || (item instanceof RegExp && item.test(fname)))) {
         continue;
@@ -44,6 +46,8 @@ function createSideBarItems(
       // replace directory name, if yes
       let text = fname;
       // get the title in index.md file
+      let indexFirstHeader = "";
+      console.log(fullPath)
       if (exec) {
         const filenames = [
           join(currentDir, fname, 'index.md'),
@@ -59,8 +63,24 @@ function createSideBarItems(
           }
         }
       }
+
       if (deletePrefix) {
         text = removePrefix(text, deletePrefix);
+      }
+      if (indexAliasFromFile) {
+        try {
+          let ptrn = join(fullPath, "index.md");
+          if (!statSync(ptrn).isFile()) ptrn = join(fullPath, "index.MD");
+          statSync(ptrn).isFile();
+          let frontmatterAlias = getAttributeFromFileByYaml(ptrn, "alias");
+          if (frontmatterAlias) text = frontmatterAlias;
+          else {
+            let h1 = getTitleFromFile(ptrn);
+            if (h1) text = h1;
+          }
+        } catch (e: any) {
+          // no alias found, skip
+        }
       }
       if (items.length > 0) {
         const sidebarItem: DefaultTheme.SidebarItem = {
