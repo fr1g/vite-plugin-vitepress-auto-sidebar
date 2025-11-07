@@ -23,7 +23,7 @@ function createSideBarItems(
     ignoreList = [],
     titleFromFile = false,
     titleFromFileByYaml = false,
-    indexAliasFromFile = true,
+    indexAliasFromFile = false,
   } = option;
   const rawNode = readdirSync(join(targetPath, ...path));
   const node = beforeCreateSideBarItems?.(rawNode) ?? rawNode;
