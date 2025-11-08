@@ -14,6 +14,7 @@ export interface SidebarPluginOptionType {
   sideBarResolved?: (data: DefaultTheme.SidebarMulti) => DefaultTheme.SidebarMulti
   sideBarItemsResolved?: (data: DefaultTheme.SidebarItem[]) => DefaultTheme.SidebarItem[]
   beforeCreateSideBarItems?: (data: string[]) => string[]
+  indexFileUseTitleName?: boolean
 }
 export interface UserConfig {
   vitepress: SiteConfig

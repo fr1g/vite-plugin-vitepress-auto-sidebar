@@ -24,9 +24,11 @@ function createSideBarItems(
     titleFromFile = false,
     titleFromFileByYaml = false,
     indexAliasFromFile = false,
+    indexFileUseTitleName = false
   } = option;
   const rawNode = readdirSync(join(targetPath, ...path));
   const node = beforeCreateSideBarItems?.(rawNode) ?? rawNode;
+
   const currentDir = join(targetPath, ...path);
   if (ignoreIndexItem && node.length === 1 && node[0] === 'index.md') {
     return [];
@@ -46,8 +48,6 @@ function createSideBarItems(
       // replace directory name, if yes
       let text = fname;
       // get the title in index.md file
-      let indexFirstHeader = "";
-      console.log(fullPath)
       if (exec) {
         const filenames = [
           join(currentDir, fname, 'index.md'),
@@ -93,8 +93,9 @@ function createSideBarItems(
       }
     } else {
       // is filed
+
       if (
-        (ignoreIndexItem && fname === 'index.md') ||
+        (ignoreIndexItem && fname.toLowerCase() === 'index.md' && !indexFileUseTitleName) ||
         /^-.*\.(md|MD)$/.test(fname) ||
         ignoreList.some(item => item === fname || (item instanceof RegExp && item.test(fname))) ||
         !fname.endsWith('.md')
@@ -112,6 +113,10 @@ function createSideBarItems(
         if (title) {
           text = title;
         }
+      }
+      if (fname.toLowerCase() === "index.md" && indexFileUseTitleName) {
+        let chkText = getTitleFromFile(realFileName);
+        if (chkText) text = chkText;
       }
       const item: DefaultTheme.SidebarItem = {
         text,
@@ -135,7 +140,7 @@ function createSideBarGroups(
   ];
 }
 
-function createSidebarMulti(path: string): DefaultTheme.SidebarMulti {
+async function createSidebarMulti(path: string): Promise<DefaultTheme.SidebarMulti> {
   const {
     ignoreList = [],
     ignoreIndexItem = false,
@@ -186,7 +191,7 @@ export default function VitePluginVitePressAutoSidebar(
       const fsWatcher = watcher.add('*.md');
       fsWatcher.on('all', async (event, path) => {
         if (event !== 'change') {
-          log(`${event} ${path}`);
+          log(`${new Date()} :: ${event} ${path}`);
           try {
             await restart();
             log('update sidebar...');
@@ -197,7 +202,7 @@ export default function VitePluginVitePressAutoSidebar(
         }
       });
     },
-    config(config) {
+    async config(config) {
       option = opt;
       const { path = '/docs' } = option;
       // increment ignore item
@@ -206,7 +211,7 @@ export default function VitePluginVitePressAutoSidebar(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/prefer-destructuring
       const { themeConfig } = (config as UserConfig).vitepress.site;
       themeConfig.sidebar =
-        createSidebarMulti(docsPath);
+        await createSidebarMulti(docsPath);
       log('injected sidebar data successfully');
       return config;
     }
